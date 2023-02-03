@@ -1,4 +1,19 @@
+from flask import Flask, request, render_template
 import requests
+
+app = Flask(__name__)
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        tx_id = request.form["tx_id"]
+        result = accelerate_transaction(tx_id)
+        if result:
+            message = "Transaction acceleration successful"
+        else:
+            message = "Transaction acceleration failed"
+        return render_template("index.html", message=message)
+    return render_template("index.html")
 
 def accelerate_transaction(tx_id):
     acceleration_services = ['https://bitcoinfees.earn.com/api/v1/accelerate/', 
@@ -32,10 +47,5 @@ def accelerate_transaction(tx_id):
             continue
     return False
 
-# Example usage
-tx_id = 'your_transaction_id'
-result = accelerate_transaction(tx_id)
-if result:
-    print("Transaction acceleration successful")
-else:
-    print("Transaction acceleration failed")
+if __name__ == "__main__":
+    app.run(debug=True)
